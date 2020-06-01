@@ -17,11 +17,13 @@ export default () => {
       email: emailRef.current.value,
       password: passwordRef.current.value,
     });
-    setRedirectLoc(res.data.redirectLoc);
+    if (res.status === 200) {
+      setRedirectLoc(res.data.redirectLoc);
+    }
   }
 
   const registerForm = (
-    <Form onSubmit={e => register(e)} method="POST">
+    <Form onSubmit={e => register(e)} method="POST" noValidate>
       <Form.Group>
         <Form.Label>Email</Form.Label>
         <Form.Control ref={emailRef} type="email" name="email" />
