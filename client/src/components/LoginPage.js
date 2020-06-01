@@ -12,16 +12,13 @@ export default () => {
 
   async function login(e) {
     e.preventDefault();
-    console.log('Logging in....')
     Axios
       .post('/auth/login', {
         email: emailRef.current.value,
         password: passwordRef.current.value,
       })
       .then(res => {
-        console.log(res);
         if (res.status === 200) {
-          console.log(res.data.redirectLoc)
           setRedirectLoc(res.data.redirectLoc)
         }
       })
@@ -32,7 +29,7 @@ export default () => {
   }
 
   const loginForm = (
-    <Form onSubmit={e => login(e)} method="POST">
+    <Form onSubmit={e => login(e)} method="POST" noValidate>
       <Form.Group>
         <Form.Label>Email</Form.Label>
         <Form.Control ref={emailRef} type="email" name="email" />
