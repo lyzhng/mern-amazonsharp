@@ -4,7 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 
-const { User } = require('../models');
+const { User, Cart, Store, Wishlist } = require('../models');
 
 router.post('/register', [
   body('username').isLength({ min: 6, max: 16 }).isAlphanumeric(),
@@ -45,7 +45,10 @@ router.post('/register', [
   try {
     const salt = bcrypt.genSaltSync(+process.env.HASH_ITER);
     const hash = bcrypt.hashSync(password, salt);
-    await User.create({ username, email, password: hash });
+    const user = await User.create({ username, email, password: hash });
+    await Store.create({ user: user._id });
+    await Cart.create({ user: user._id });
+    await Wishlist.create({ user: user._id });
     res.status(200).json({
       message: 'Registration successful.',
       err: false,
