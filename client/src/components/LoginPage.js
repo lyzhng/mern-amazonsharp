@@ -3,29 +3,28 @@ import { Container, Button, Form } from 'react-bootstrap';
 
 import Navbar from './Navbar';
 import Axios from 'axios';
-import { Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 export default () => {
-  const [redirectLoc, setRedirectLoc] = useState();
-  const emailRef = useRef('');
-  const passwordRef = useRef('');
+  const history = useHistory();
+  const [message, setMessage] = useState();
+  const emailRef = useRef();
+  const passwordRef = useRef();
 
   async function login(e) {
     e.preventDefault();
-    Axios
-      .post('/auth/login', {
+    try {
+      const res = await Axios.post('/auth/login', {
         email: emailRef.current.value,
         password: passwordRef.current.value,
       })
-      .then(res => {
-        if (res.status === 200) {
-          setRedirectLoc(res.data.redirectLoc)
-        }
-      })
-      .catch(err => {
-        console.error(err);
-
-      })
+      setMessage(res.data.message);
+      if (res.data.success) {
+        history.push('/');
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   const loginForm = (
@@ -48,7 +47,8 @@ export default () => {
     <div className="Wrapper">
       <Navbar />
       <Container fluid className="Login my-3">
-        {redirectLoc ? <Redirect to={redirectLoc} /> : loginForm}
+        {message}
+        {loginForm}
       </Container>
     </div>
   );
