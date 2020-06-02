@@ -7,7 +7,8 @@ import {
   NotFoundPage,
   ExplorePage,
   LoginPage,
-  RegisterPage
+  RegisterPage,
+  Profile
 } from './components/index';
 import { UserContext } from './context/UserContext';
 
@@ -24,8 +25,9 @@ export default () => {
           <Route exact path='/explore' component={ExplorePage} />
           <Route exact path='/login' component={LoginPage} />
           <Route exact path='/register' component={RegisterPage} />
+          <Route exact path='/profile/:username' component={Profile} />
         </UserContext.Provider>
-        <Route path='*' component={NotFoundPage} />
+        <Route exact path='*' component={NotFoundPage} />
       </Switch>
     </BrowserRouter>
   )
