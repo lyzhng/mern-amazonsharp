@@ -57,8 +57,47 @@ router.post('/products/new', async (req, res) => {
   }
 });
 
-router.post('/products/update', async (req, res) => {
+router.put('/products/update', async (req, res) => {
   try {
+    console.log('Updating product.');
+    const {
+      productId,
+      updatedPrice,
+      updatedName
+    } = req.body;
+    console.log(req.body);
+    await Product.updateOne({ _id: productId }, {
+      price: updatedPrice,
+      name: updatedName,
+    });
+    res.status(200).json({
+      message: 'Successfully updated the product.',
+      err: false,
+      success: true,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(200).json({
+      err: true,
+      success: false,
+      message: 'Something went wrong. Try again in a bit.',
+    });
+  }
+});
+
+router.delete('/products/delete', async (req, res) => {
+  try {
+    console.log('Arrived at /api/products/delete.');
+    console.log(req.body);
+    const productId = req.body.productId;
+    await Product.deleteOne({ _id: productId });
+    // TODO: Delete it from user's store.
+
+    res.status(200).json({
+      message: 'Successfully deleted the product.',
+      err: false,
+      success: true,
+    });
   } catch (err) {
     console.error(err);
     res.status(200).json({
@@ -84,7 +123,7 @@ router.get('/store/:username', async (req, res) => {
       .lean();
     console.log(`${req.params.username}'s store`);
     console.log(store);
-    return (store.user !== null)
+    return (store.user !== null && store.items !== null)
       ? res.status(200).json({ products: store.items })
       : res.status(200).json({ products: [] });
   } catch (err) {
