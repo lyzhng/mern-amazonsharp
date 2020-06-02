@@ -6,6 +6,7 @@ import NotFoundPage from './NotFoundPage';
 import ExplorePage from './ExplorePage';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
+import Profile from './Profile';
 
 export {
   HomePage,
@@ -15,5 +16,6 @@ export {
   NotFoundPage,
   ExplorePage,
   LoginPage,
-  RegisterPage
+  RegisterPage,
+  Profile
 };
