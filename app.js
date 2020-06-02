@@ -20,19 +20,16 @@ app.use(cookieParser(process.env.SECRET));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-
-const sessionStore = new MongoStore({
-  mongooseConnection: connection,
-  collection: 'sessions',
-});
-
 app.use(
   session({
     name: 'sid',
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
-    store: sessionStore,
+    store: new MongoStore({
+      mongooseConnection: connection,
+      collection: 'sessions'
+    }),
     rolling: true,
     cookie: {
       maxAge: 1000 * 60 * 15,
