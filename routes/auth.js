@@ -1,5 +1,5 @@
 const express = require('express');
-const { check, body, validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
@@ -23,39 +23,85 @@ router.post('/register', [
     }
   }),
 ], async (req, res) => {
+  console.log('Registering... (server)')
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    console.error(errors);
+    const exists = errors.array().filter(err => err.msg === 'Username is already in' || err.msg === 'E-mail is already in use.');
+    if (exists) {
+      return res.status(200).json({
+        message: 'E-mail or username already exists.',
+        err: false,
+        success: false
+      })
+    }
+    return res.status(200).json({
+      message: 'Follow the guidelines for email, username, and password inputs.',
+      err: false,
+      success: false,
+    });
   }
   const { email, username, password } = req.body;
-
-  bcrypt.hash(password, process.env.HASH_ITER, async (err, hash) => {
-    if (err) {
-      return res.status(500).json({
-        err: 'An error has occurred during while hashing the password.',
-      });
-    }
-    await User.create({ username, email, password: hash, });
-    res.status(200).json({ redirectLoc: '/login' });
-  })
+  try {
+    const salt = bcrypt.genSaltSync(+process.env.HASH_ITER);
+    const hash = bcrypt.hashSync(password, salt);
+    await User.create({ username, email, password: hash });
+    res.status(200).json({
+      message: 'Registration successful.',
+      err: false,
+      success: true,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: 'An error has occurred during while hashing the password.',
+      err: true,
+      success: false,
+    });
+  }
 });
 
-router.post('/login', passport.authenticate('local'), (req, res, next) => {
-  console.log(req.user)
-  return res.status(200).json({
-    message: 'Login successful.',
-    redirectLoc: '/'
-  })
+/**
+ * Handling Passport auth by yourself https://stackoverflow.com/questions/15711127/express-passport-node-js-error-handling
+ */
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      next(err)
+    }
+    if (!user) {
+      return res.status(200).json({
+        message: 'Authention failed. Cannot retrieve user.',
+        success: false,
+        err: false,
+      })
+    }
+    req.login(user, loginErr => {
+      if (loginErr) {
+        return next(loginErr)
+      }
+      return res.status(200).json({
+        message: 'Authentication successful.',
+        success: true,
+        err: false,
+      })
+    })
+  })(req, res, next);
 });
 
 router.post('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
-      return res.json({ err });
+      return res.json({
+        err: true,
+        message: 'Session could not be destroyed.',
+        success: false,
+      });
     }
     res.clearCookie('sid');
     res.json({
-      redirectLoc: '/'
+      message: 'Logout successful.',
+      success: true,
+      err: false
     })
   })
 })
