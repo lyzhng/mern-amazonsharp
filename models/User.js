@@ -18,12 +18,15 @@ const UserSchema = new Schema({
   },
   store: {
     type: Schema.Types.ObjectId,
+    ref: 'Store'
   },
   cart: {
     type: Schema.Types.ObjectId,
+    ref: 'Cart'
   },
   wishlist: {
     type: Schema.Types.ObjectId,
+    ref: 'Wishlist'
   },
 });
 

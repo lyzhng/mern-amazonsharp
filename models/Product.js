@@ -2,11 +2,6 @@ const { Schema } = require('mongoose');
 const connection = require('../config/database');
 
 const ProductSchema = new Schema({
-  id: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
   name: {
     type: String,
   },
@@ -18,6 +13,7 @@ const ProductSchema = new Schema({
     {
       type: Schema.Types.ObjectId,
       ref: 'User',
+      default: []
     },
   ],
   boughtFreq: {

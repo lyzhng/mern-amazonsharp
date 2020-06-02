@@ -2,15 +2,15 @@ const { Schema } = require('mongoose');
 const connection = require('../config/database');
 
 const CartSchema = new Schema({
-  id: {
-    type: Number,
-    required: true,
-    unique: true,
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
   },
   items: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Product',
+      default: [],
     },
   ],
 });

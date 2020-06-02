@@ -1,7 +1,7 @@
 const { Schema } = require('mongoose');
 const connection = require('../config/database');
 
-const WishlistSchema = new Schema({
+const StoreSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
@@ -15,5 +15,5 @@ const WishlistSchema = new Schema({
   ],
 });
 
-const Wishlist = connection.model('Wishlist', WishlistSchema);
-module.exports = Wishlist;
+const Cart = connection.model('Store', StoreSchema);
+module.exports = Cart;
