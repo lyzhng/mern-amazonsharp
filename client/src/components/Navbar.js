@@ -51,6 +51,9 @@ export default () => {
         console.log(res.data)
         setUser(res.data.username);
       })
+      .catch(err => {
+        console.error(err);
+      });
   }, [])
 
   return (
