@@ -23,7 +23,6 @@ router.post('/register', [
     }
   }),
 ], async (req, res) => {
-  console.log('Registering... (server)')
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.error(errors);
@@ -46,9 +45,16 @@ router.post('/register', [
     const salt = bcrypt.genSaltSync(+process.env.HASH_ITER);
     const hash = bcrypt.hashSync(password, salt);
     const user = await User.create({ username, email, password: hash });
-    await Store.create({ user: user._id });
-    await Cart.create({ user: user._id });
-    await Wishlist.create({ user: user._id });
+    const [store, cart, wishlist] = await Promise.all([
+      Store.create({ user: user._id }), 
+      Cart.create({ user: user._id }),
+      Wishlist.create({ user: user._id }),
+    ]);
+    await User.updateOne({ _id: user._id }, {
+      store: store._id,
+      cart: cart._id,
+      wishlist: wishlist._id,
+    });
     res.status(200).json({
       message: 'Registration successful.',
       err: false,
@@ -67,6 +73,7 @@ router.post('/register', [
  * Handling Passport auth by yourself https://stackoverflow.com/questions/15711127/express-passport-node-js-error-handling
  */
 router.post('/login', (req, res, next) => {
+  console.log(req.body);
   passport.authenticate('local', (err, user, info) => {
     if (err) {
       next(err)
