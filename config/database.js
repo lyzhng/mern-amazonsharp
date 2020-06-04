@@ -6,6 +6,7 @@ const connection = mongoose.createConnection(MONGODB_URI, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
   useCreateIndex: true,
+  useFindAndModify: false,
 });
 
 module.exports = connection;
