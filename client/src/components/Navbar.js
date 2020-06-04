@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Navbar, Nav, Button } from 'react-bootstrap';
+import React, { useContext, useEffect } from 'react';
+import { Popover, Menu, MenuItem, Position, Button, Navbar, AnchorButton, Alignment } from '@blueprintjs/core';
 import { UserContext } from '../context/UserContext';
 import Axios from 'axios';
 
@@ -7,42 +7,37 @@ export default () => {
   const { user, setUser } = useContext(UserContext);
 
   const loginButton = (
-    <Nav.Item className="ml-2">
-      <Button size="md" href="/login">
-        Login
-    </Button>
-    </Nav.Item>
+    <AnchorButton icon="log-in" text="Login" href="/login" style={{
+      margin: '0px 4px' 
+    }} />
   )
 
-  const profileButton = (
-    <Nav.Item className="ml-2">
-      <Button size="md" variant="dark" href={`/profile/${user}`}>
-        {user}
-      </Button>
-    </Nav.Item>
-  )
-
-  const logoutButton = (
-    <Nav.Item className="ml-2">
-      <Button
-        size="md"
-        href="/logout"
-        onClick={async (e) => {
-          e.preventDefault();
-          await Axios.post('/auth/logout');
-          setUser(null);
-        }}>
-        Logout
-    </Button>
-    </Nav.Item>
+  const menu = (
+    <Popover 
+      position={Position.BOTTOM}
+      content={
+        <Menu>
+          <MenuItem href={`/profile/${user}`} icon="user" text="Profile" />
+          <MenuItem href="/settings" icon="cog" text="Settings" />
+          <MenuItem icon="log-out" text="Logout"
+            onClick={
+              async (e) => {
+                e.preventDefault();
+                await Axios.post('/auth/logout');
+                setUser(null);
+              }
+            }
+          />
+        </Menu>
+      }>
+      <Button icon="menu" text="Menu" minimal={true} />
+    </Popover>
   )
 
   const registerButton = (
-    <Nav.Item className="ml-2">
-      <Button size="md" href="/register">
-        Register
-    </Button>
-    </Nav.Item>
+    <AnchorButton text="Register" href="/register" style={{
+      margin: '0px 4px'
+    }} />
   )
 
   useEffect(() => {
@@ -57,34 +52,20 @@ export default () => {
   }, [])
 
   return (
-    <Navbar className="Navbar" bg="dark" variant="dark">
-      <Navbar.Brand href="#home">Amazon#</Navbar.Brand>
-      <Nav className="mr-auto">
-        <Nav.Item>
-          <Nav.Link href="/">Home</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link href="/about">About</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link href="/explore">Explore</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link href="/contact">Contact</Nav.Link>
-        </Nav.Item>
-      </Nav>
-      <Nav className="ml-auto">
+    <Navbar className="bp3-dark">
+      <Navbar.Group align={Alignment.LEFT}>
+        <Navbar.Heading>Amazon#</Navbar.Heading>
+        <Navbar.Divider />
+        <AnchorButton className="bp3-minimal" icon="home" text="Home" href="/" />
+        <AnchorButton className="bp3-minimal" icon="grid-view" text="Explore" href="/explore" />
+      </Navbar.Group>
+      <Navbar.Group align={Alignment.RIGHT}>
         {
           user
-            ? profileButton
-            : loginButton
+            ? menu
+            : <div>{loginButton}{registerButton}</div>
         }
-        {
-          user
-            ? logoutButton
-            : registerButton
-        }
-      </Nav>
+      </Navbar.Group>
     </Navbar >
   );
 };

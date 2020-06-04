@@ -16,47 +16,42 @@ export default () => {
     fetchProducts()
   }, [])
 
+  const image1 = (
+    <img
+      src='https://i.picsum.photos/id/119/3264/2176.jpg'
+      width='300px'
+    />
+  )
+
+  const image2 = (
+    <img
+      src='https://i.picsum.photos/id/557/200/200.jpg'
+      width='300px'
+    />
+  )
+
   const displayedProducts = products.map((product, idx) => {
     return (
-      <Col
-        xs={12}
-        sm={8}
-        md={6}
-        lg={3}
-        key={product.id}
-        className='SingleProduct my-2'
-      >
-        <Figure>
-          {idx % 2 === 0 ? (
-            <Figure.Image
-              fluid
-              thumbnail
-              src='https://i.picsum.photos/id/119/3264/2176.jpg'
-            />
-          ) : (
-              <Figure.Image
-                fluid
-                thumbnail
-                src='https://i.picsum.photos/id/557/200/200.jpg'
-              />
-            )}
-          <Figure.Caption className='text-center'>
-            <h6>Item: {product.name}</h6>
-            <h6>Price: {product.price}</h6>
-          </Figure.Caption>
-        </Figure>
-      </Col>
+      <figure key={product._id}>
+        {
+          idx % 2 === 0 
+            ? image1
+            : image2 
+        }
+        <figcaption>
+          <h3>Item: {product.name}</h3>
+          <h4>Price: {product.price}</h4>
+        </figcaption>
+      </figure>
     )
   })
 
   return (
-    <div className='Wrapper'>
+    <div className="Wrapper">
       <Navbar />
-      <Container fluid className='Explore m-3'>
-        <Row className='justify-content-start align-items-start text-center'>
-          {displayedProducts}
-        </Row>
-      </Container>
+      <div className="Content">
+        {displayedProducts}
+      </div>
     </div>
   )
 }

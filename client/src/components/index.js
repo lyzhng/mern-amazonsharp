@@ -7,6 +7,7 @@ import ExplorePage from './ExplorePage';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
 import Profile from './Profile';
+import PostItemPage from './PostItemPage';
 
 export {
   HomePage,
@@ -17,5 +18,6 @@ export {
   ExplorePage,
   LoginPage,
   RegisterPage,
-  Profile
+  Profile,
+  PostItemPage
 };

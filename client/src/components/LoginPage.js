@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Container, Button, Form } from 'react-bootstrap';
+import { FormGroup, Button, InputGroup } from '@blueprintjs/core';
 
 import Navbar from './Navbar';
 import Axios from 'axios';
@@ -12,6 +12,7 @@ export default () => {
   const passwordRef = useRef();
 
   async function login(e) {
+    console.log('Logging in...');
     e.preventDefault();
     try {
       const res = await Axios.post('/auth/login', {
@@ -28,28 +29,28 @@ export default () => {
   }
 
   const loginForm = (
-    <Form onSubmit={e => login(e)} method="POST" noValidate>
-      <Form.Group>
-        <Form.Label>Email</Form.Label>
-        <Form.Control ref={emailRef} type="email" name="email" />
-      </Form.Group>
-      <Form.Group>
-        <Form.Label>Password</Form.Label>
-        <Form.Control ref={passwordRef} type="password" name="password" />
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Login
-      </Button>
-    </Form>
+    <form onSubmit={e => login(e)} method="POST" novalidate style={{ width: '100%', height: '100%' }}>
+      <FormGroup
+        label="Email"
+        labelFor="email">
+        <InputGroup id="email" name="email" inputRef={emailRef} />
+      </FormGroup>
+      <FormGroup
+        label="Password"
+        labelFor="password">
+        <InputGroup id="password" name="password" type="password" inputRef={passwordRef} />
+      </FormGroup>
+        <Button intent="primary" type="submit" text="Login" onClick={() => console.log(emailRef.current, passwordRef.current)} />
+    </form>
   );
 
   return (
-    <div className="Wrapper">
+    <div className="Wrapper" style={{ width: '100vw', height: '100vh' }}>
       <Navbar />
-      <Container fluid className="Login my-3">
+      <div className="Content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1.5rem', }}>
         {message}
         {loginForm}
-      </Container>
+      </div>
     </div>
   );
 };

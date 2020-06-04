@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { Container, Button, Form } from 'react-bootstrap';
-import { Redirect, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { FormGroup, InputGroup, Button } from '@blueprintjs/core';
 
 import Navbar from './Navbar';
 import Axios from 'axios';
@@ -32,34 +32,35 @@ export default () => {
   }
 
   const registerForm = (
-    <Form onSubmit={e => register(e)} method="POST" noValidate>
-      <Form.Group>
-        <Form.Label>Email</Form.Label>
-        <Form.Control ref={emailRef} type="email" name="email" />
-      </Form.Group>
-      <Form.Group>
-        <Form.Label>Username</Form.Label>
-        <Form.Control ref={usernameRef} type="text" name="username" />
-        <small className="text-muted">Your username should be between 6 and 16 (inclusive) alphanumeric characters.</small>
-      </Form.Group>
-      <Form.Group>
-        <Form.Label>Password</Form.Label>
-        <Form.Control ref={passwordRef} type="password" name="password" />
-        <small className="text-muted">Your password should be at least 8 characters. Go wild, but remember it!</small>
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Register
-      </Button>
-    </Form>
+    <form onSubmit={e => register(e)} method="POST" novalidate style={{ width: '100%', height: '100%' }}>
+      <FormGroup
+        label="Email"
+        labelFor="email">
+        <InputGroup id="email" name="email" placeholder="johnappleseed@example.com" type="email" inputRef={emailRef}/>
+      </FormGroup>
+      <FormGroup
+        helperText="Your username should be between 6 and 16 (inclusive) alphanumeric characters."
+        label="Username"
+        labelFor="username">
+        <InputGroup id="username" name="username" placeholder="johnappleseed" type="text" inputRef={usernameRef}/>
+      </FormGroup>
+      <FormGroup
+        helperText="Your password should be at least 8 characters. Go wild, but remember it!"
+        label="Password"
+        labelFor="password">
+        <InputGroup id="password" name="password" type="password" inputRef={passwordRef} />
+      </FormGroup>
+      <Button intent="primary" type="submit" text="Register" />
+    </form>
   );
 
   return (
-    <div className="Wrapper">
+    <div className="Wrapper" style={{ width: '100vw', height: '100vh' }}>
       <Navbar />
-      <Container fluid className="Register my-3">
+      <div className="Content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1.5rem' }}>
         {message}
         {registerForm}
-      </Container>
+      </div>
     </div>
   );
 };
