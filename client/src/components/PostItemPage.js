@@ -1,6 +1,6 @@
-import React, { useRef, useContext } from 'react';
-import { Container, Form, Button } from 'react-bootstrap';
+import React, { useRef, useContext, useState } from 'react';
 import Axios from 'axios';
+import { FormGroup, InputGroup, Button } from '@blueprintjs/core';
 
 import Navbar from './Navbar';
 import { UserContext } from '../context/UserContext';
@@ -9,36 +9,37 @@ const PostItemPage = () => {
   const { user, _ } = useContext(UserContext);
   const productName = useRef();
   const productPrice = useRef();
+  const [message, setMessage] = useState();
 
   return (
     <div className="Wrapper">
       <Navbar />
-      <Container fluid className="PostItem m-3">
-        <Form onSubmit={
+      <div className="Content" style={{ padding: '1.5rem', }}>
+        {message}
+        <form onSubmit={
           async (e) => { 
             e.preventDefault();
             try {
-              await Axios.post('/api/products/new', {
+              const res = await Axios.post('/api/products/new', {
                 productName: productName.current.value,
                 productPrice: productPrice.current.value,
                 username: user,
               });
+              setMessage(res.data.message);
             } catch (err) {
               console.error(err);
             }
           }
         }>
-          <Form.Group>
-            <Form.Label>Product Name</Form.Label>
-            <Form.Control type="text" name="productName" ref={ productName } />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Product Price</Form.Label>
-            <Form.Control type="text" name="productPrice" ref={ productPrice }/>
-          </Form.Group>
-          <Button variant="outline-primary" type="submit">Post Item</Button>
-        </Form>
-      </Container>
+          <FormGroup label="Product Name" labelFor="product-name">
+            <InputGroup id="product-name" type="text" name="productName" inputRef={ productName } />
+          </FormGroup>
+          <FormGroup label="Product Price" labelFor="product-price">
+            <InputGroup id="product-price" type="text" name="productPrice" inputRef={ productPrice } />
+          </FormGroup>
+          <Button intent="primary" type="submit" text="Post Item" />
+        </form>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import Axios from 'axios'
-import { Container, Row, Col, Figure } from 'react-bootstrap'
 
 import Navbar from './Navbar'
 
