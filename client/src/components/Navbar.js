@@ -18,6 +18,7 @@ export default () => {
       content={
         <Menu>
           <MenuItem href={`/profile/${user}`} icon="user" text="Profile" />
+          <MenuItem href="/product/new" icon="add" text="Post New Item" />
           <MenuItem href="/settings" icon="cog" text="Settings" />
           <MenuItem icon="log-out" text="Logout"
             onClick={
