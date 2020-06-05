@@ -32,16 +32,20 @@ router.post('/products/new', async (req, res) => {
       productPrice,
       username
     } = req.body;
-    const product = await Product.create({ name: productName, price: productPrice });
-    const user = await User.findOne({ username });
+    if (!isValidName(productName) || !isValidPrice(productPrice)) {
+      return res.status(200).json({
+        err: false,
+        success: false,
+        message: 'Product name should contain alphanumeric characters and/or spaces. Product price should be a number.',
+      });
+    }
+    const [product, user] = await Promise.all([
+      Product.create({ name: productName, price: productPrice }),
+      User.findOne({ username }),
+    ]);
     await Product.findOneAndUpdate({ _id: product._id }, { $push: { sellers: user._id } });
     // Need to add it to the user's store.
-    await Store.updateOne({}, { $push: { items: product._id } })
-      .populate({
-        path: 'user',
-        match: { _id: { $in: [user._id] } }
-      })
-      .lean();
+    await Store.updateOne({ user: user._id }, { $push: { items: product._id } });
     res.status(200).json({
       err: false,
       success: true,
@@ -65,7 +69,13 @@ router.put('/products/update', async (req, res) => {
       updatedPrice,
       updatedName
     } = req.body;
-    console.log(req.body);
+    if (!isValidName(updatedName) || !isValidPrice(updatedPrice)) {
+      return res.status(200).json({
+        err: false,
+        success: false,
+        message: 'Product name should contain alphanumeric characters and/or spaces. Product price should be a number.',
+      });
+    }
     await Product.updateOne({ _id: productId }, {
       price: updatedPrice,
       name: updatedName,
@@ -142,5 +152,13 @@ router.get('/profile/:username', async (req, res) => {
     });
   }
 });
+
+function isValidName(name) {
+ return name.match(/^([A-Za-z0-9]+(\s)*[A-Za-z0-9]+)+$/g);
+}
+
+function isValidPrice(price) {
+  return +price === +price;
+}
 
 module.exports = router;
