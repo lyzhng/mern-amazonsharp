@@ -27,6 +27,7 @@ router.post('/register', [
   if (!errors.isEmpty()) {
     console.error(errors);
     const exists = errors.array().filter(err => err.msg === 'Username is already in' || err.msg === 'E-mail is already in use.');
+
     if (exists) {
       return res.status(200).json({
         message: 'E-mail or username already exists.',
@@ -34,31 +35,55 @@ router.post('/register', [
         success: false
       })
     }
+    
     return res.status(200).json({
       message: 'Follow the guidelines for email, username, and password inputs.',
       err: false,
       success: false,
     });
   }
+
   const { email, username, password } = req.body;
+
   try {
-    const salt = bcrypt.genSaltSync(+process.env.HASH_ITER);
-    const hash = bcrypt.hashSync(password, salt);
-    const user = await User.create({ username, email, password: hash });
-    const [store, cart, wishlist] = await Promise.all([
-      Store.create({ user: user._id }), 
-      Cart.create({ user: user._id }),
-      Wishlist.create({ user: user._id }),
-    ]);
-    await User.updateOne({ _id: user._id }, {
-      store: store._id,
-      cart: cart._id,
-      wishlist: wishlist._id,
+    bcrypt.genSalt(+process.env.HASH_ITER, (saltErr, salt) => {
+      if (saltErr) {
+        return res.json({
+          err: true,
+          message: 'There was an error with salting.',
+          success: false,
+        });
+      }
+
+      bcrypt.hash(password, salt, async (hashErr, hash) => {
+        if (hashErr) {
+          return res.json({
+            err: true,
+            message: 'There was an error with hashing.',
+            success: false,
+          });
+        }
+
+        const user = await User.create({ username, email, password: hash });
+        const [store, cart, wishlist] = await Promise.all([
+          Store.create({ user: user._id }), 
+          Cart.create({ user: user._id }),
+          Wishlist.create({ user: user._id }),
+        ]);
+
+        await User.updateOne({ _id: user._id }, {
+          store: store._id,
+          cart: cart._id,
+          wishlist: wishlist._id,
+        });
+      });
     });
-    res.status(200).json({
+
+    return res.status(200).json({
       message: 'Registration successful.',
       err: false,
       success: true,
+      username 
     });
   } catch (err) {
     return res.status(500).json({
@@ -93,6 +118,7 @@ router.post('/login', (req, res, next) => {
         message: 'Authentication successful.',
         success: true,
         err: false,
+        username: req.body.username
       })
     })
   })(req, res, next);
