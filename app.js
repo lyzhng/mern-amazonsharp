@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors')
+const fileUpload = require('express-fileupload');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -16,6 +17,7 @@ require('dotenv').config();
 var app = express();
 
 app.use(express.json());
+app.use(fileUpload());
 app.use(cookieParser(process.env.SECRET));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.urlencoded({ extended: true }));
