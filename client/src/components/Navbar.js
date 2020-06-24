@@ -1,10 +1,27 @@
-import React, { useContext, useEffect } from 'react';
-import { Popover, Menu, MenuItem, Position, Button, Navbar, AnchorButton, Alignment } from '@blueprintjs/core';
-import { UserContext } from '../context/UserContext';
 import Axios from 'axios';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Popover, Menu, MenuItem, Position, Button, Navbar, AnchorButton, Alignment, Spinner, Intent } from '@blueprintjs/core';
+import { UserContext } from '../context/UserContext';
 
 export default () => {
   const { user, setUser } = useContext(UserContext);
+  const [loading, setLoading] = useState(true);
+  const history = useHistory();
+
+  const spinner = (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100vw' }}>
+      <Spinner intent={Intent.PRIMARY} size={100} />
+    </div>
+  );
+
+  useEffect(() => {
+    Axios.get('/api/user_data')
+      .then(res => {
+        setUser(res.data.username);
+        setLoading(false);
+      });
+    }, []);
 
   const loginButton = (
     <AnchorButton icon="log-in" text="Login" href="/login" style={{
@@ -17,7 +34,6 @@ export default () => {
       position={Position.BOTTOM}
       content={
         <Menu>
-          <MenuItem href={`/profile/${user}`} icon="user" text="Profile" />
           <MenuItem href="/product/new" icon="add" text="Post New Item" />
           <MenuItem href="/settings" icon="cog" text="Settings" />
           <MenuItem icon="log-out" text="Logout"
@@ -26,6 +42,7 @@ export default () => {
                 e.preventDefault();
                 await Axios.post('/auth/logout');
                 setUser(null);
+                history.push('/');
               }
             }
           />
@@ -41,32 +58,34 @@ export default () => {
     }} />
   )
 
-  useEffect(() => {
-    Axios.get('/api/user_data')
-      .then(res => {
-        console.log(res.data)
-        setUser(res.data.username);
-      })
-      .catch(err => {
-        console.error(err);
-      });
-  }, [])
+  const profileIcon = (
+    <AnchorButton text="Profile" icon="user" href={`/profile/${user}`} minimal={true} style={{
+      margin: '0px 4px'
+    }} />
+  )
 
-  return (
+  const navbar = (
     <Navbar className="bp3-dark">
       <Navbar.Group align={Alignment.LEFT}>
         <Navbar.Heading>Amazon#</Navbar.Heading>
         <Navbar.Divider />
-        <AnchorButton className="bp3-minimal" icon="home" text="Home" href="/" />
-        <AnchorButton className="bp3-minimal" icon="grid-view" text="Explore" href="/explore" />
+        <AnchorButton minimal={true} icon="home" text="Home" href="/" />
+        <AnchorButton minimal={true} icon="grid-view" text="Explore" href="/explore" />
+        <AnchorButton minimal={true} icon="office" text="Contact Us" href="/contact" />
       </Navbar.Group>
       <Navbar.Group align={Alignment.RIGHT}>
         {
           user
-            ? menu
+            ? <div>{profileIcon}{menu}</div>
             : <div>{loginButton}{registerButton}</div>
         }
       </Navbar.Group>
     </Navbar >
+  )
+
+  return (
+    <div>
+      { loading ? spinner : navbar }
+    </div>
   );
 };
