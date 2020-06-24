@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import Axios from 'axios'
+import { Spinner, Intent } from '@blueprintjs/core';
 
 import Navbar from './Navbar'
 
 export default () => {
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -12,7 +14,7 @@ export default () => {
       console.log(data.products)
       setProducts(data.products)
     }
-    fetchProducts()
+    fetchProducts().then(() => setLoading(false));
   }, [])
 
   const image1 = (
@@ -28,6 +30,12 @@ export default () => {
       width='300px'
     />
   )
+
+  const spinner = (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100vw' }}>
+      <Spinner intent={Intent.PRIMARY} size={100} />
+    </div>
+  );
 
   const displayedProducts = products.map((product, idx) => {
     return (
@@ -49,7 +57,7 @@ export default () => {
     <div className="Wrapper">
       <Navbar />
       <div className="Content">
-        {displayedProducts}
+        {loading ? spinner : displayedProducts}
       </div>
     </div>
   )
