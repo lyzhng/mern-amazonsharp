@@ -1,41 +1,28 @@
 const express = require('express');
-const { body, validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
+const { validateRegistration, createUser } = require('./utils');
+const { 
+  USERNAME_IN_USE_MSG, 
+  EMAIL_IN_USE_MSG, 
+  EMAIL_OR_USERNAME_EXISTS_MSG, 
+  AUTH_SUCCESS_MSG 
+} = require('../config/constants');
 
-const { User, Cart, Store, Wishlist } = require('../models');
-
-router.post('/register', [
-  body('username').isLength({ min: 6, max: 16 }).isAlphanumeric(),
-  body('email').isEmail(),
-  body('password').isLength({ min: 8 }),
-  body('email').custom(async (email) => {
-    const user = await User.findOne({ email });
-    if (user) {
-      return Promise.reject('E-mail is already in use.')
-    }
-  }),
-  body('username').custom(async (username) => {
-    const user = await User.findOne({ username });
-    if (user) {
-      return Promise.reject('Username is already in use.')
-    }
-  }),
-], async (req, res) => {
+router.post('/register', validateRegistration, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.error(errors);
-    const exists = errors.array().filter(err => err.msg === 'Username is already in' || err.msg === 'E-mail is already in use.');
-
+    const exists = errors.array().filter(err => err.msg === USERNAME_IN_USE_MSG || err.msg === EMAIL_IN_USE_MSG);
     if (exists) {
       return res.status(200).json({
-        message: 'E-mail or username already exists.',
+        message: EMAIL_OR_USERNAME_EXISTS_MSG,
         err: false,
         success: false
       })
     }
-    
     return res.status(200).json({
       message: 'Follow the guidelines for email, username, and password inputs.',
       err: false,
@@ -63,19 +50,7 @@ router.post('/register', [
             success: false,
           });
         }
-
-        const user = await User.create({ username, email, password: hash });
-        const [store, cart, wishlist] = await Promise.all([
-          Store.create({ user: user._id }), 
-          Cart.create({ user: user._id }),
-          Wishlist.create({ user: user._id }),
-        ]);
-
-        await User.updateOne({ _id: user._id }, {
-          store: store._id,
-          cart: cart._id,
-          wishlist: wishlist._id,
-        });
+        createUser(username, email, hash);
       });
     });
 
@@ -99,13 +74,13 @@ router.post('/register', [
  */
 router.post('/login', (req, res, next) => {
   console.log(req.body);
-  passport.authenticate('local', (err, user, info) => {
+  passport.authenticate('local', (err, user, info) => { // eslint-disable-line no-unused-vars
     if (err) {
       next(err)
     }
     if (!user) {
       return res.status(200).json({
-        message: 'Authention failed. Cannot retrieve user.',
+        message: 'Authentication failed. Cannot retrieve user.',
         success: false,
         err: false,
       })
@@ -115,7 +90,7 @@ router.post('/login', (req, res, next) => {
         return next(loginErr)
       }
       return res.status(200).json({
-        message: 'Authentication successful.',
+        message: AUTH_SUCCESS_MSG,
         success: true,
         err: false,
         username: req.body.username

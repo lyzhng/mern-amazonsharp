@@ -7,7 +7,6 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const connection = require('./config/database');
 const indexRouter = require('./routes/index')
-const authRouter = require('./routes/auth');
 const apiRouter = require('./routes/api');
 
 const MongoStore = require('connect-mongo')(session);
@@ -52,7 +51,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/', indexRouter);
-app.use('/auth', authRouter);
 app.use('/api', apiRouter);
 
 module.exports = app;
