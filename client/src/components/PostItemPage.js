@@ -1,12 +1,12 @@
 import React, { useRef, useContext, useState } from 'react';
-import Axios from 'axios';
+import axios from 'axios';
 import { FormGroup, InputGroup, Button } from '@blueprintjs/core';
 
 import Navbar from './Navbar';
 import { UserContext } from '../context/UserContext';
 
 const PostItemPage = () => {
-  const { user, _ } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const productName = useRef();
   const productPrice = useRef();
   const [message, setMessage] = useState();
@@ -20,7 +20,7 @@ const PostItemPage = () => {
           async (e) => { 
             e.preventDefault();
             try {
-              const res = await Axios.post('/api/products/new', {
+              const res = await axios.post('/api/products', {
                 productName: productName.current.value,
                 productPrice: productPrice.current.value,
                 username: user,

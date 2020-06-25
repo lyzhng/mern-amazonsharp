@@ -2,7 +2,7 @@ import React from "react";
 
 import Navbar from "./Navbar";
 
-export default () => {
+const HomePage = () => {
   return (
     <div className="Wrapper" style={{ width: '100vw', height: '100vh' }}>
       <Navbar />
@@ -13,3 +13,4 @@ export default () => {
   )
 };
 
+export default HomePage;

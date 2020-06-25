@@ -1,10 +1,10 @@
-import Axios from 'axios';
+import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Popover, Menu, MenuItem, Position, Button, Navbar, AnchorButton, Alignment, Spinner, Intent } from '@blueprintjs/core';
 import { UserContext } from '../context/UserContext';
 
-export default () => {
+const CustomNavbar = () => {
   const { user, setUser } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const history = useHistory();
@@ -16,7 +16,7 @@ export default () => {
   );
 
   useEffect(() => {
-    Axios.get('/api/user_data')
+    axios.get('/api/profiles/user-data')
       .then(res => {
         setUser(res.data.username);
         setLoading(false);
@@ -40,7 +40,7 @@ export default () => {
             onClick={
               async (e) => {
                 e.preventDefault();
-                await Axios.post('/auth/logout');
+                await axios.post('/auth/logout');
                 setUser(null);
                 history.push('/');
               }
@@ -89,3 +89,5 @@ export default () => {
     </div>
   );
 };
+
+export default CustomNavbar;

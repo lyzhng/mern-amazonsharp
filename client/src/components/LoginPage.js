@@ -2,10 +2,10 @@ import React, { useRef, useState } from 'react';
 import { FormGroup, Button, InputGroup } from '@blueprintjs/core';
 
 import Navbar from './Navbar';
-import Axios from 'axios';
+import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
-export default () => {
+const LoginPage = () => {
   const history = useHistory();
   const [message, setMessage] = useState();
   const emailRef = useRef();
@@ -15,7 +15,7 @@ export default () => {
     console.log('Logging in...');
     e.preventDefault();
     try {
-      const res = await Axios.post('/auth/login', {
+      const res = await axios.post('/api/auth/login', {
         email: emailRef.current.value,
         password: passwordRef.current.value,
       })
@@ -29,7 +29,7 @@ export default () => {
   }
 
   const loginForm = (
-    <form onSubmit={e => login(e)} method="POST" novalidate style={{ width: '100%', height: '100%' }}>
+    <form onSubmit={e => login(e)} method="POST" noValidate style={{ width: '100%', height: '100%' }}>
       <FormGroup
         label="Email"
         labelFor="email">
@@ -54,3 +54,5 @@ export default () => {
     </div>
   );
 };
+
+export default LoginPage;

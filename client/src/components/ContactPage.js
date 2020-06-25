@@ -3,7 +3,7 @@ import { FormGroup, InputGroup, Button, TextArea, Intent } from '@blueprintjs/co
 
 import Navbar from './Navbar';
 
-export default () => {
+const ContactPage = () => {
   const emailRef = useRef();
   const nameRef = useRef();
   const textRef = useRef();
@@ -40,3 +40,5 @@ export default () => {
     </div>
   )
 }
+
+export default ContactPage;

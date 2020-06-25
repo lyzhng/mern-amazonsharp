@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Axios from 'axios';
+import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { Button, FormGroup, InputGroup, Intent } from '@blueprintjs/core';
 
@@ -17,7 +17,7 @@ const Profile = props => {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await Axios.get(`/api/profile/${username}`);
+        const res = await axios.get(`/api/profiles/${username}`);
         if (res.data.success) { 
           // TODO: Find a way to make a callback.
           setProducts(res.data.products);
@@ -93,7 +93,7 @@ const Profile = props => {
                     if (editState[product._id]) {
                       let res;
                       try {
-                        const res = await Axios.put('/api/products/update', {
+                        const res = await axios.put('/api/products', {
                           productId: product._id,
                           updatedPrice: currentProduct.price,
                           updatedName: currentProduct.name,
@@ -122,7 +122,7 @@ const Profile = props => {
                   style={{ marginLeft: '0.4rem' }}
                   onClick={async () => {
                     try {
-                      await Axios.delete('/api/products/delete', {
+                      await axios.delete('/api/products', {
                         data: { productId: product._id }
                       });
                       setProducts(products.filter(p => p._id !== product._id));

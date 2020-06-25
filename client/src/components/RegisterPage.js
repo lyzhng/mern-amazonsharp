@@ -3,9 +3,9 @@ import { useHistory } from 'react-router-dom';
 import { FormGroup, InputGroup, Button } from '@blueprintjs/core';
 
 import Navbar from './Navbar';
-import Axios from 'axios';
+import axios from 'axios';
 
-export default () => {
+const RegisterPage = () => {
   const history = useHistory();
   const emailRef = useRef();
   const usernameRef = useRef();
@@ -16,7 +16,7 @@ export default () => {
     e.preventDefault();
     console.log('Registering... (client)')
     try {
-      const res = await Axios.post('/auth/register', {
+      const res = await axios.post('/api/auth/register', {
         username: usernameRef.current.value,
         email: emailRef.current.value,
         password: passwordRef.current.value,
@@ -32,7 +32,7 @@ export default () => {
   }
 
   const registerForm = (
-    <form onSubmit={e => register(e)} method="POST" novalidate style={{ width: '100%', height: '100%' }}>
+    <form onSubmit={e => register(e)} method="POST" noValidate style={{ width: '100%', height: '100%' }}>
       <FormGroup
         label="Email"
         labelFor="email">
@@ -64,3 +64,5 @@ export default () => {
     </div>
   );
 };
+
+export default RegisterPage;
