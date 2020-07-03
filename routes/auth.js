@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const { validateRegistration, createUser } = require('./utils');
+const { User } = require('../models');
 const { 
   USERNAME_IN_USE_MSG, 
   EMAIL_IN_USE_MSG, 
@@ -73,7 +74,6 @@ router.post('/register', validateRegistration, async (req, res) => {
  * Handling Passport auth by yourself https://stackoverflow.com/questions/15711127/express-passport-node-js-error-handling
  */
 router.post('/login', (req, res, next) => {
-  console.log(req.body);
   passport.authenticate('local', (err, user, info) => { // eslint-disable-line no-unused-vars
     if (err) {
       next(err)
@@ -85,15 +85,17 @@ router.post('/login', (req, res, next) => {
         err: false,
       })
     }
-    req.login(user, loginErr => {
+    req.login(user, async (loginErr) => {
       if (loginErr) {
-        return next(loginErr)
+        return next(loginErr);
       }
+      const email = req.body.email;
+      const { username } = await User.findOne({ email });
       return res.status(200).json({
         message: AUTH_SUCCESS_MSG,
         success: true,
         err: false,
-        username: req.body.username
+        username
       })
     })
   })(req, res, next);
