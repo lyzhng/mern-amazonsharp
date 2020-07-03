@@ -13,7 +13,7 @@ import {
 } from './components';
 import { UserContext } from './context/UserContext';
 
-export default () => {
+const App = () => {
   const [user, setUser] = useState(null);
 
   return (
@@ -38,3 +38,5 @@ export default () => {
     </BrowserRouter>
   )
 }
+
+export default App;
