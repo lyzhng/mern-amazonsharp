@@ -15,7 +15,8 @@ const PrivateRoute = ({ component: Component, loading, ...rest }) => {
           pathname: '/login',
           state: {
             referrer: '/product/new',
-            type: 'private'
+            type: 'private',
+            seen: false,
           }
         }} />
         : <Spinner />

@@ -14,16 +14,12 @@ const LoginPage = props => {
   const { setUser } = useContext(UserContext);
 
   useEffect(() => {
-    console.log('Updated value of message', message);
-  }, [message, setMessage]);
-
-  const { state: locationState } = props.location;
-  if (locationState && locationState.type === 'private') {
-    delete props.location.state.referrer;
-    delete props.location.state.type;
-    console.log('You need to be logged in to view that page.');
-    setMessage('You need to be logged in to view that page.');
-  }
+    const { state: locationState } = props.location;
+    if (locationState && locationState.type === 'private' && !locationState.seen) {
+      setMessage('You need to be logged in to view that page.');
+      props.location.state.seen = true;
+    }
+  }, []);
 
   async function login(e) {
     console.log('Logging in...');
