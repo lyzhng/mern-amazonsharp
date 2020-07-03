@@ -6,25 +6,40 @@ import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
-const LoginPage = () => {
+const LoginPage = props => {
   const history = useHistory();
   const [message, setMessage] = useState();
   const emailRef = useRef();
   const passwordRef = useRef();
   const { setUser } = useContext(UserContext);
 
+  useEffect(() => {
+    console.log('Updated value of message', message);
+  }, [message, setMessage]);
+
+  const { state: locationState } = props.location;
+  if (locationState && locationState.type === 'private') {
+    delete props.location.state.referrer;
+    delete props.location.state.type;
+    console.log('You need to be logged in to view that page.');
+    setMessage('You need to be logged in to view that page.');
+  }
+
   async function login(e) {
+    console.log('Logging in...');
     e.preventDefault();
     try {
       const res = await axios.post('/api/auth/login', {
         email: emailRef.current.value,
         password: passwordRef.current.value,
       });
-      const { message, username } = res.data;
+      const { message, username, success } = res.data;
       setMessage(message);
       setUser(username);
-      if (res.data.success) {
+      if (success) {
         history.push('/');
+      } else {
+        setMessage('The email or password you entered cannot be found in the system.');
       }
     } catch (err) {
       console.error(err);
@@ -32,7 +47,7 @@ const LoginPage = () => {
   }
 
   const loginForm = (
-    <form onSubmit={login} method="POST" noValidate style={{ width: '100%', height: '100%' }}>
+    <form onSubmit={e => login(e)} method="POST" noValidate style={{ width: '100%', height: '100%' }}>
       <FormGroup
         label="Email"
         labelFor="email">
