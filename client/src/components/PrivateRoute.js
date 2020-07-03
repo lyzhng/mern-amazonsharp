@@ -11,8 +11,14 @@ const PrivateRoute = ({ component: Component, loading, ...rest }) => {
       !loading && user
         ? <Component {...props} />
         : !loading && !user
-        ? <Redirect to='/login' />
-        : Spinner
+        ? <Redirect to={{
+          pathname: '/login',
+          state: {
+            referrer: '/product/new',
+            type: 'private'
+          }
+        }} />
+        : <Spinner />
     )} />
   )
 }
