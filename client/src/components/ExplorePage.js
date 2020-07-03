@@ -32,7 +32,10 @@ const ExplorePage = () => {
     <div className="Wrapper">
       <Navbar />
       <div className="Content">
-        {loading ? Spinner : displayedProducts}
+        {
+          loading 
+            ? <Spinner /> 
+            : displayedProducts}
       </div>
     </div>
   )
