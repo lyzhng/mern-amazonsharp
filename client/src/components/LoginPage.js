@@ -1,25 +1,28 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext, useEffect } from 'react';
 import { FormGroup, Button, InputGroup } from '@blueprintjs/core';
 
 import Navbar from './Navbar';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import { UserContext } from '../context/UserContext';
 
 const LoginPage = () => {
   const history = useHistory();
   const [message, setMessage] = useState();
   const emailRef = useRef();
   const passwordRef = useRef();
+  const { setUser } = useContext(UserContext);
 
   async function login(e) {
-    console.log('Logging in...');
     e.preventDefault();
     try {
       const res = await axios.post('/api/auth/login', {
         email: emailRef.current.value,
         password: passwordRef.current.value,
-      })
-      setMessage(res.data.message);
+      });
+      const { message, username } = res.data;
+      setMessage(message);
+      setUser(username);
       if (res.data.success) {
         history.push('/');
       }
@@ -29,7 +32,7 @@ const LoginPage = () => {
   }
 
   const loginForm = (
-    <form onSubmit={e => login(e)} method="POST" noValidate style={{ width: '100%', height: '100%' }}>
+    <form onSubmit={login} method="POST" noValidate style={{ width: '100%', height: '100%' }}>
       <FormGroup
         label="Email"
         labelFor="email">
@@ -40,7 +43,7 @@ const LoginPage = () => {
         labelFor="password">
         <InputGroup id="password" name="password" type="password" inputRef={passwordRef} />
       </FormGroup>
-        <Button intent="primary" type="submit" text="Login" onClick={() => console.log(emailRef.current, passwordRef.current)} />
+        <Button intent="primary" type="submit" text="Login"  />
     </form>
   );
 

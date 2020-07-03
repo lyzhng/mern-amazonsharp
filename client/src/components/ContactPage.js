@@ -26,7 +26,7 @@ const ContactPage = () => {
         <InputGroup id="name" name="name" type="text" inputRef={nameRef}/>
       </FormGroup>
       <TextArea intent={Intent.PRIMARY} large fill />
-      <Button intent="primary" type="submit" text="Contact" />
+      <Button intent="primary" type="submit" text="Contact" style={{ marginTop: '1rem' }} />
     </form>
   );
 

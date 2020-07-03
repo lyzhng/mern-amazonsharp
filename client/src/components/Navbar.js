@@ -1,27 +1,12 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Popover, Menu, MenuItem, Position, Button, Navbar, AnchorButton, Alignment, Spinner, Intent } from '@blueprintjs/core';
+import { Popover, Menu, MenuItem, Position, Button, Navbar, AnchorButton, Alignment } from '@blueprintjs/core';
 import { UserContext } from '../context/UserContext';
 
 const CustomNavbar = () => {
   const { user, setUser } = useContext(UserContext);
-  const [loading, setLoading] = useState(true);
   const history = useHistory();
-
-  const spinner = (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100vw' }}>
-      <Spinner intent={Intent.PRIMARY} size={100} />
-    </div>
-  );
-
-  useEffect(() => {
-    axios.get('/api/profiles/user-data')
-      .then(res => {
-        setUser(res.data.username);
-        setLoading(false);
-      });
-    }, []);
 
   const loginButton = (
     <AnchorButton icon="log-in" text="Login" href="/login" style={{
@@ -40,7 +25,7 @@ const CustomNavbar = () => {
             onClick={
               async (e) => {
                 e.preventDefault();
-                await axios.post('/auth/logout');
+                await axios.post('/api//auth/logout');
                 setUser(null);
                 history.push('/');
               }
@@ -85,7 +70,7 @@ const CustomNavbar = () => {
 
   return (
     <div>
-      { loading ? spinner : navbar }
+      {navbar}
     </div>
   );
 };
