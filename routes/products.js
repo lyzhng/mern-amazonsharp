@@ -26,9 +26,11 @@ router.post('/', checkAuth, async (req, res) => {
       productPrice,
       username,
     } = req.body;
+    console.log(productName, productPrice, username, req.files);
     const UPLOADS_PATH = path.resolve('client', 'public', 'uploads');
+    let file;
     if (req.files) {
-       const file = req.files.productImage;
+       file = req.files.productImage;
        file.mv(`${UPLOADS_PATH}/${file.name}`, err => {
         if (err) {
           console.error(err);
@@ -53,8 +55,8 @@ router.post('/', checkAuth, async (req, res) => {
       err: false,
       success: true,
       message: 'Successfully posted a new item!',
-      // fileName: file.name,
-      // filePath: `${UPLOADS_PATH}/${file.name}`
+      fileName: file.name,
+      filePath: `${UPLOADS_PATH}/${file.name}`
     });
   } catch (err) {
     console.error(err);
