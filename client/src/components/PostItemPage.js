@@ -9,6 +9,7 @@ const PostItemPage = () => {
   const { user } = useContext(UserContext);
   const productName = useRef();
   const productPrice = useRef();
+  const [file, setFile] = useState();
   const [message, setMessage] = useState();
 
   return (
@@ -16,15 +17,16 @@ const PostItemPage = () => {
       <Navbar />
       <div className="Content" style={{ padding: '1.5rem', }}>
         {message}
-        <form onSubmit={
+        <form encType="multipart/form-data" onSubmit={
           async (e) => { 
             e.preventDefault();
             try {
-              const res = await axios.post('/api/products', {
-                productName: productName.current.value,
-                productPrice: productPrice.current.value,
-                username: user,
-              });
+              const data = new FormData();
+              data.append('productName', productName.current.value);
+              data.append('productPrice', productPrice.current.value);
+              data.append('username', user);
+              data.append('file', file);
+              const res = await axios.post('/api/products', data);
               setMessage(res.data.message);
             } catch (err) {
               console.error(err);
@@ -37,6 +39,10 @@ const PostItemPage = () => {
           <FormGroup label="Product Price" labelFor="product-price">
             <InputGroup id="product-price" type="text" name="productPrice" inputRef={ productPrice } />
           </FormGroup>
+          <input type="file" name="file" onChange={e => {
+            const file = e.target.files[0];
+            setFile(file);
+          }} />
           <Button intent="primary" type="submit" text="Post Item" />
         </form>
       </div>

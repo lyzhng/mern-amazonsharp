@@ -1,9 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path');
+const multer = require('multer');
 
 const { User, Product, Store } = require('../models');
 const { checkAuth, isValidName, isValidPrice } = require('./utils');
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now());
+  }
+});
 
 router.get('/', async (req, res) => {
   try {
@@ -19,23 +28,14 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', checkAuth, async (req, res) => {
+const upload = multer({ storage});
+router.post('/', checkAuth, upload.single('file'), async (req, res) => {
   try {
     const {
       productName,
       productPrice,
       username,
     } = req.body;
-    const UPLOADS_PATH = path.resolve('client', 'public', 'uploads');
-    if (req.files) {
-       const file = req.files.productImage;
-       file.mv(`${UPLOADS_PATH}/${file.name}`, err => {
-        if (err) {
-          console.error(err);
-          return res.status(500).send({ err });
-        }
-      });
-    }
     if (!isValidName(productName) || !isValidPrice(productPrice)) {
       return res.status(200).json({
         err: false,
@@ -53,8 +53,6 @@ router.post('/', checkAuth, async (req, res) => {
       err: false,
       success: true,
       message: 'Successfully posted a new item!',
-      // fileName: file.name,
-      // filePath: `${UPLOADS_PATH}/${file.name}`
     });
   } catch (err) {
     console.error(err);
