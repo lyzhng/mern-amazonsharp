@@ -4,7 +4,7 @@
   "private": true,
   "main": "./bin/www",
   "scripts": {
-    "start": "yarn clean | node ./bin/www",
+    "start": "yarn clean | nodemon ./bin/www",
     "start:dev": "nodemon ./bin/www",
     "dev": "nodemon ./bin/www",
     "client": "cd client && npm run start",
